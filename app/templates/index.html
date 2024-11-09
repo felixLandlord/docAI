@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Chatbot</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/scripts.js"></script>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-container">
+        <h1 class="app-title">RAGChat</h1>
+        <button 
+            class="start-chat-btn"
+            hx-post="/chat/init"
+            hx-target="#landingPage"
+            hx-swap="outerHTML"
+        >
+            START CHAT
+        </button>
+    </div>
+</body>
+</html>

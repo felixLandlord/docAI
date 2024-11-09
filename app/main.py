@@ -1,10 +1,10 @@
-from fastapi import FastAPI, responses
+from fastapi import FastAPI, responses, Request
 from fastapi.middleware.cors import CORSMiddleware
-from core.database import init_db
 from api.v1.routes import chat, store
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 
-# Initialize databases
-init_db()
 
 app = FastAPI(
     title="docAI",
@@ -22,10 +22,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 # Include routers
 app.include_router(router=store.router)
 app.include_router(router=chat.router)
 
-@app.get("/")
-def index() -> responses.RedirectResponse:
-    return responses.RedirectResponse("/docs")
+# @app.get("/")
+# def index() -> responses.RedirectResponse:
+#     return responses.RedirectResponse("/docs")
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request) -> dict:
+    return templates.TemplateResponse("index.html", {"request": request})

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/scripts.js"></script>
+</head>
+<body>
+    <div id="chatPage" class="chat-page">
+        <header class="chat-header">
+            <h1 class="chat-title">RAGChat</h1>
+        </header>
+        
+        <div class="chat-container">
+            <div class="messages-container" id="messages">
+                <div class="message bot">
+                    Hello! I'm your RAG-powered assistant. Upload some documents, and I'll help you analyze them.
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <button 
+                    class="action-btn"
+                    hx-post="/new-session"
+                    hx-target="#messages"
+                    hx-swap="innerHTML"
+                >
+                    New
+                </button>
+                <button class="action-btn" onclick="toggleModal()">
+                    Upload
+                </button>
+                <input 
+                    type="text" 
+                    class="chat-input" 
+                    placeholder="Type your message..."
+                    hx-post="/chat/query"
+                    hx-trigger="keyup[keyCode==13]"
+                    hx-target="#messages"
+                    hx-swap="beforeend"
+                >
+                <button 
+                    class="action-btn"
+                    hx-post="/chat/query"
+                    hx-trigger="click"
+                    hx-target="#messages"
+                    hx-swap="beforeend"
+                >
+                    Send
+                </button>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div class="modal" id="uploadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Upload Documents</h3>
+                </div>
+                <form
+                    hx-post="/store/upload"
+                    enctype="multipart/form-data"
+                    hx-target="#messages"
+                    hx-swap="beforeend"
+                >
+                    <div class="form-group">
+                        <label for="files">Select Documents</label>
+                        <input 
+                            type="file" 
+                            id="files" 
+                            name="files" 
+                            multiple 
+                            required
+                        >
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="modal-btn cancel-btn" onclick="toggleModal()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="modal-btn upload-submit-btn">
+                            Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

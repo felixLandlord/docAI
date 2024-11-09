@@ -1,0 +1,332 @@
+:root {
+    --primary-color: #2563eb;
+    --bg-color: #f3f4f6;
+    --chat-human: #e2e8f0;
+    --chat-bot: #dbeafe;
+    --border-color: #e5e7eb;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    min-height: 100vh;
+}
+
+/* Landing Page Styles */
+.landing-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    gap: 2rem;
+}
+
+.app-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.start-chat-btn {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.start-chat-btn:hover {
+    background-color: #1d4ed8;
+    transform: scale(1.05);
+}
+
+/* Chat Page Styles */
+.chat-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    background-color: white;
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.chat-container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 2rem auto;
+    width: 100%;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages-container {
+    flex: 1;
+    min-height: calc(100vh - 300px);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow-y: auto;
+}
+
+.message {
+    max-width: 80%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    line-height: 1.5;
+    position: relative;
+}
+
+.message.human {
+    background-color: #4F46E5;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+.message.bot {
+    background-color: #E5E7EB;
+    color: #1F2937;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+
+.input-container {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    outline: none;
+}
+
+.chat-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-header {
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.modal-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.cancel-btn {
+    background-color: #e5e7eb;
+    border: none;
+}
+
+.upload-submit-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+/* Add these styles to your existing CSS file */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.modal-header {
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    margin: 0;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.upload-submit-btn {
+    background-color: #2563eb;
+    color: white;
+}
+
+.upload-submit-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+.message.error {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #991b1b;
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 0.375rem;
+}
+
+.message.bot ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.message.bot li {
+    margin: 0.25rem 0;
+}

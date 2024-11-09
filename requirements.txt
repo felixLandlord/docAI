@@ -4,12 +4,22 @@ langchain-groq
 langchain
 langchain-community
 langchain-huggingface
-chromadb
 pydantic-settings
 python-multipart
 pypdf
 python-dotenv
-langchain-chroma # install
+faiss-cpu
+# pydantic=2.9.2
+sqlalchemy
+jinja2
+htmx
 
+# pymongo
+# motor
+# langchain-mongodb
+
+# chromadb
+# langchain-chroma # install
 # requires sqlite3 >= 3.35.0
 # pysqlite3
+# pypdf2

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # app:
+  #   build: .
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - GROQ_KEY=${GROQ_KEY}
+  #     - HUGGINGFACE_KEY=${HUGGINGFACE_KEY}
+  #     - MONGODB_URI=mongodb://mongodb:27017
+  #     - ATLAS_URI=mongodb://atlas:27017
+  #   depends_on:
+  #     - mongodb
+  #     - atlas
+  #   networks:
+  #     - app-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  # atlas:
+  #   image: mongodb/mongodb-atlas-local:latest
+  #   ports:
+  #     - "27017:27018"
+  #   volumes:
+  #     - atlas_data:/data/db
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  # atlas_data:

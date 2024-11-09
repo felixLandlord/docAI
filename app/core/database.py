@@ -1,42 +1,74 @@
-# import sqlite3
-# import pysqlite3 as sqlite3
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+# app/core/database.py
+from sqlalchemy import create_engine, Column, String, DateTime, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from datetime import datetime, timezone
+import json
+from typing import Optional, List
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.chat_history import BaseChatMessageHistory
+from uuid import uuid4
 
-from contextlib import contextmanager
-from core.config import settings
+# Create SQLite database engine
+DATABASE_URL = "sqlite:///./app/db/sqlite_history/chat_history.db"
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
 
-def init_db():
-    """Initialize SQLite database with required tables"""
-    with get_db() as db:
-        db.execute("""
-            CREATE TABLE IF NOT EXISTS chat_sessions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                session_id TEXT UNIQUE NOT NULL,
-                collection_name TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL
-            )
-        """)
+Base = declarative_base()
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+    
+    id = Column(String, primary_key=True)
+    session_id = Column(String, index=True)
+    role = Column(String)  # 'human' or 'ai'
+    content = Column(Text)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+
+# Create tables
+Base.metadata.create_all(bind=engine)
+
+class SQLiteChatMessageHistory(BaseChatMessageHistory):
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        self.db: Session = SessionLocal()
+
+    def add_message(self, message: BaseMessage) -> None:
+        chat_message = ChatMessage(
+            id=str(uuid4()),
+            session_id=self.session_id,
+            role="human" if isinstance(message, HumanMessage) else "ai",
+            content=message.content
+        )
+        self.db.add(chat_message)
+        self.db.commit()
+
+    def clear(self) -> None:
+        self.db.query(ChatMessage).filter(
+            ChatMessage.session_id == self.session_id
+        ).delete()
+        self.db.commit()
+
+    @property
+    def messages(self) -> List[BaseMessage]:
+        messages = []
+        db_messages = self.db.query(ChatMessage).filter(
+            ChatMessage.session_id == self.session_id
+        ).order_by(ChatMessage.created_at).all()
         
-        db.execute("""
-            CREATE TABLE IF NOT EXISTS messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                chat_session_id INTEGER,
-                role TEXT NOT NULL,
-                content TEXT NOT NULL,
-                timestamp TIMESTAMP NOT NULL,
-                FOREIGN KEY (chat_session_id) REFERENCES chat_sessions(id)
-            )
-        """)
-        db.commit()
+        for msg in db_messages:
+            if msg.role == "human":
+                messages.append(HumanMessage(content=msg.content))
+            else:
+                messages.append(AIMessage(content=msg.content))
+        return messages
 
-@contextmanager
+    def __del__(self):
+        self.db.close()
+
 def get_db():
-    """Context manager for database connections"""
-    conn = sqlite3.connect(settings.sqlite_db_path)
-    conn.row_factory = sqlite3.Row
+    db = SessionLocal()
     try:
-        yield conn
+        yield db
     finally:
-        conn.close()
+        db.close()

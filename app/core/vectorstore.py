@@ -5,68 +5,105 @@ import io
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from core.config import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
+import faiss
+from langchain_community.docstore.in_memory import InMemoryDocstore
+from langchain_community.vectorstores import FAISS
+from langchain.schema import Document
+from uuid import uuid4
+
 
 embeddings = HuggingFaceInferenceAPIEmbeddings(
-    api_key=settings.hf_key,
+    api_key=settings.huggingface_key,
     model_name="sentence-transformers/all-mpnet-base-v2",
 )
 
-
 def process_document(source_type: str, content: io.BytesIO):
+    # Create a temporary file to save the uploaded content
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
         temp_file.write(content.read())
         temp_file_path = temp_file.name
+        print(f"Temporary file created at: {temp_file_path}")
 
     try:
+        # Load document based on source type
         if source_type == "pdf":
             loader = PyPDFLoader(temp_file_path)
+            docs = loader.load()
+            if not docs:
+                print("No content extracted from the document.")
+                return []  # Return an empty list if no content is extracted
+            print("Documents loaded successfully!")
         else:
             raise ValueError(f"Unsupported source type: {source_type}")
 
-        docs = loader.load()
-        return docs
+        # Convert loaded docs to LangChain Document objects
+        formatted_docs = [Document(page_content=doc.page_content, metadata=doc.metadata) for doc in docs]
+        return formatted_docs
+
     finally:
-        os.unlink(temp_file_path)
+        # Keep the temp file for inspection
+        print(f"Temporary file retained for inspection: {temp_file_path}")
 
 
 def create_vectorstore_from_documents(
-    documents: list[dict], 
-    chunk_size: int, 
-    chunk_overlap: int, 
-    collection_name: str,
-    session_id: str
+    documents: list[dict]
 ):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
+        chunk_size=1500,
+        chunk_overlap=200,
         separators=["\n\n", "\n", " ", ""],
     )
+    print("Text splitter loaded.")
 
     all_chunks = []
     for document in documents:
+        # Process each document and extract text
         docs = process_document(document["type"], document["content"])
+        if not docs:
+            print("Skipping empty document.")
+            continue  # Skip this document if no content was extracted
         chunks = text_splitter.split_documents(docs)
         all_chunks.extend(chunks)
+        print(f"Processed and chunked document: {len(chunks)} chunks created.")
 
-    # Create vectorstore with persistence
-    chroma_vector_store = Chroma(
-        collection_name=collection_name,
-        embedding_function=embeddings,
-        persist_directory=f"{settings.chroma_persist_dir}/{session_id}"
-    )
+    if not all_chunks:
+        print("No chunks were created from the documents. Vector store creation aborted.")
+        return None  # Return None if no chunks were created
+
+    print("All documents chunked and ready for embedding.")
+
     
-    # Add documents and persist
-    chroma_vector_store.add_documents(all_chunks)
-    chroma_vector_store.persist()
+    index = faiss.IndexFlatL2(768)
 
-    return chroma_vector_store
-
-
-def get_vector_store(session_id: str, collection_name: str):
-    """Get vector store for specific session and collection"""
-    return Chroma(
-        collection_name=collection_name,
+    faiss_vectorstore = FAISS(
         embedding_function=embeddings,
-        persist_directory=f"{settings.chroma_persist_dir}/{session_id}"
+        index=index,
+        docstore=InMemoryDocstore(),
+        index_to_docstore_id={},
     )
+    print("FAISS vector store created.")
+    
+    # Generate UUIDs for each chunk
+    uuids = [str(uuid4()) for _ in range(len(all_chunks))]
+    
+    # Debug information
+    print("\n=== Chunks and UUIDs Mapping ===")
+    print(f"Number of chunks: {len(all_chunks)}")
+    print(f"Number of UUIDs: {len(uuids)}")
+    
+    # Add documents with their IDs
+    print(f"\nAdding {len(all_chunks)} documents to vector store...")
+    returned_ids = faiss_vectorstore.add_documents(documents=all_chunks, ids=uuids)
+    print(f"Returned IDs: {returned_ids}")
+    
+    faiss_vectorstore.save_local("app/db/faiss_index")
+
+    return faiss_vectorstore
+
+
+def get_vector_store():
+    load_vector_store = FAISS.load_local(
+    "app/db/faiss_index", embeddings, allow_dangerous_deserialization=True
+    )
+
+    return load_vector_store
