@@ -1,0 +1,15 @@
+fastapi[standard]
+langchain-groq
+# langchain-openai
+langchain
+langchain-community
+langchain-huggingface
+chromadb
+pydantic-settings
+python-multipart
+pypdf
+python-dotenv
+langchain-chroma # install
+
+# requires sqlite3 >= 3.35.0
+# pysqlite3
