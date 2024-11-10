@@ -19,10 +19,8 @@ async def upload_documents(
 ) -> dict:
     try:
         session_id = get_session_id(request)
-        
-        print(f"Received {len(files)} files for session {session_id}")
-        
-        # Process documents
+                
+        # process pdf documents
         sources = []
         for file in files:
             file_extension = os.path.splitext(file.filename)[1].lower()
@@ -34,12 +32,16 @@ async def upload_documents(
                     status_code=400,
                     detail=f"Unsupported file type: {file.filename}"
                 )
-        print("extracted content from pdf")
-
-        # Create vector store
+                
+        # create vector store
         vectorstore = create_vectorstore_from_documents(sources)
         if vectorstore:
             return JSONResponse({"message": "Vector store created successfully", "session_id": session_id})
+        else:
+            return JSONResponse(
+                {"message": "No content could be extracted from the documents. Please upload valid PDF files."},
+                status_code=400
+            )
     except Exception as e:
         logger.error(f"Error in creating vector store: {e}")
         raise HTTPException(status_code=400, detail=str(e))

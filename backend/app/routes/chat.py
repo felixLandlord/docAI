@@ -19,8 +19,7 @@ router = APIRouter(prefix="/chat", tags=["Chat"])
 llm = get_llm()
 
 COOKIE_NAME = "session_id"
-COOKIE_MAX_AGE = 7 * 24 * 60 * 60  # 7 days in seconds
-
+COOKIE_MAX_AGE = 1 * 24 * 60 * 60  # 1 days in seconds
 
 class ChatQuery(BaseModel):
     query: str
@@ -29,16 +28,16 @@ class ChatQuery(BaseModel):
 @router.post("/init")
 async def initialize_session(response: Response) -> dict:
     try:
-        # Generate new session ID
+        # random session_id
         session_id = str(uuid4())
         
-        # Clear existing FAISS index
+        # remove existing FAISS index (reason: not persisting vector store for a long time, rather for only the current session)
         faiss_index_path = "app/db/faiss_index"
         if os.path.exists(faiss_index_path):
             shutil.rmtree(faiss_index_path)
             os.makedirs(faiss_index_path)
             
-        # Set session ID cookie
+        # save the session_id in cookies
         response.set_cookie(
             key=COOKIE_NAME,
             value=session_id,
@@ -72,7 +71,7 @@ async def chat_query(
     try:
         session_id = get_session_id(request)
         
-        # Get vector store
+        # load vector store
         vector_store = get_vector_store()
         if not vector_store:
             raise HTTPException(status_code=404, detail="Vector store not found")
@@ -94,7 +93,7 @@ async def chat_query(
         )
         
         result = conversational_rag_chain.invoke(
-            {"input": chat_query.query}, 
+            {"input": chat_query.query},
             config={"configurable": {"session_id": session_id}}
         )
 
@@ -111,79 +110,4 @@ async def chat_query(
     
     except Exception as e:
         logger.error(f"Error in chat query: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-##################################################################################
-@router.get("/history/{session_id}")
-async def get_specific_chat_history(
-    session_id: str,
-    db: Session = Depends(get_db)
-) -> dict:
-    try:
-        chat_history = SQLiteChatMessageHistory(session_id=session_id)
-        messages = chat_history.messages
-        
-        formatted_messages = [
-            {
-                "role": "human" if isinstance(msg, HumanMessage) else "ai",
-                "content": msg.content
-            }
-            for msg in messages
-        ]
-        
-        return {"session_id": session_id, "messages": formatted_messages}
-    except Exception as e:
-        logger.error(f"Error retrieving chat history: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/history")
-async def get_current_chat_history(
-    request: Request,
-    db: Session = Depends(get_db)
-) -> dict:
-    try:
-        session_id = get_session_id(request)
-        chat_history = SQLiteChatMessageHistory(session_id=session_id)
-        messages = chat_history.messages
-        
-        formatted_messages = [
-            {
-                "role": "human" if isinstance(msg, HumanMessage) else "ai",
-                "content": msg.content
-            }
-            for msg in messages
-        ]
-        
-        return {"session_id": session_id, "messages": formatted_messages}
-    except Exception as e:
-        logger.error(f"Error retrieving chat history: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.delete("/history/{session_id}")
-async def clear_specific_chat_history(
-    session_id: str,
-    db: Session = Depends(get_db)
-) -> dict:
-    try:
-        chat_history = SQLiteChatMessageHistory(session_id=session_id)
-        chat_history.clear()
-        return {"message": f"Chat history cleared for session {session_id}"}
-    except Exception as e:
-        logger.error(f"Error clearing chat history: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.delete("/history")
-async def clear_current_chat_history(
-    request: Request,
-    db: Session = Depends(get_db)
-) -> dict:
-    try:
-        session_id = get_session_id(request)
-        chat_history = SQLiteChatMessageHistory(session_id=session_id)
-        chat_history.clear()
-        return {"message": f"Chat history cleared for session {session_id}"}
-    except Exception as e:
-        logger.error(f"Error clearing chat history: {e}")
         raise HTTPException(status_code=500, detail=str(e))

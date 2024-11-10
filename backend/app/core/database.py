@@ -3,14 +3,15 @@ from sqlalchemy import create_engine, Column, String, DateTime, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime, timezone
-import json
-from typing import Optional, List
+from typing import List
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from uuid import uuid4
+from core.config import settings
 
 # Create SQLite database engine
-DATABASE_URL = "sqlite:///./backend/app/db/sqlite_history/chat_history.db"
+DATABASE_URL = settings.database_url
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
@@ -27,7 +28,7 @@ class ChatMessage(Base):
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
     
     
-# Create tables
+# create tables
 Base.metadata.create_all(bind=engine)
 
 

@@ -6,7 +6,7 @@ from core.prompts import QA_PROMPT
 
 
 def get_llm():
-    return ChatGroq(model="llama-3.1-8b-instant", temperature=0.1, api_key=settings.groq_key)
+    return ChatGroq(model=settings.llm_name, temperature=settings.llm_temperature, api_key=settings.groq_key)
 
 
 def get_qa_chain(llm):

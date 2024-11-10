@@ -5,7 +5,7 @@ from core.prompts import CONTEXTUALIZE_Q_PROMPT
 def get_semantic_retriever(vector_store):
     semantic_retriever = vector_store.as_retriever(
        search_type="similarity",
-       search_kwargs={"k": 10}
+       search_kwargs={"k": 5}
     )
 
     return semantic_retriever

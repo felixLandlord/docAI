@@ -1,6 +1,6 @@
 from fastapi import FastAPI, responses
 from fastapi.middleware.cors import CORSMiddleware
-from routes import chat, store
+from routes import store, chat, others
 
 
 app = FastAPI(
@@ -10,7 +10,6 @@ app = FastAPI(
     description="Assist users with document-based queries"
 )
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,11 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(router=store.router)
 app.include_router(router=chat.router)
+app.include_router(router=others.router)
 
-
+# redirect to auto-docs on app start
 @app.get("/")
 def index() -> responses.RedirectResponse:
     return responses.RedirectResponse("/docs")
