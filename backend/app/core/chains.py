@@ -4,11 +4,14 @@ from langchain.chains import create_retrieval_chain
 from core.config import settings
 from core.prompts import QA_PROMPT
 
+
 def get_llm():
     return ChatGroq(model="llama-3.1-8b-instant", temperature=0.1, api_key=settings.groq_key)
 
+
 def get_qa_chain(llm):
     return create_stuff_documents_chain(llm, QA_PROMPT)
+
 
 def get_rag_chain(history_aware_retriever, question_answer_chain):
     return create_retrieval_chain(

@@ -17,6 +17,7 @@ embeddings = HuggingFaceInferenceAPIEmbeddings(
     model_name="sentence-transformers/all-mpnet-base-v2",
 )
 
+
 def process_document(source_type: str, content: io.BytesIO):
     # Create a temporary file to save the uploaded content
     with tempfile.NamedTemporaryFile(delete=False) as temp_file:
@@ -72,7 +73,6 @@ def create_vectorstore_from_documents(
 
     print("All documents chunked and ready for embedding.")
 
-    
     index = faiss.IndexFlatL2(768)
 
     faiss_vectorstore = FAISS(
@@ -96,14 +96,14 @@ def create_vectorstore_from_documents(
     returned_ids = faiss_vectorstore.add_documents(documents=all_chunks, ids=uuids)
     print(f"Returned IDs: {returned_ids}")
     
-    faiss_vectorstore.save_local("app/db/faiss_index")
+    faiss_vectorstore.save_local("backend/app/db/faiss_index")
 
     return faiss_vectorstore
 
 
 def get_vector_store():
     load_vector_store = FAISS.load_local(
-    "app/db/faiss_index", embeddings, allow_dangerous_deserialization=True
+    "backend/app/db/faiss_index", embeddings, allow_dangerous_deserialization=True
     )
 
     return load_vector_store

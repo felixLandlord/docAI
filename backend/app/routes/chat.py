@@ -11,11 +11,8 @@ from pydantic import BaseModel
 from langchain.schema import HumanMessage
 import shutil
 import os
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 
 
-templates = Jinja2Templates(directory="app/templates")
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -24,11 +21,13 @@ llm = get_llm()
 COOKIE_NAME = "session_id"
 COOKIE_MAX_AGE = 7 * 24 * 60 * 60  # 7 days in seconds
 
+
 class ChatQuery(BaseModel):
     query: str
     
-@router.post("/init", response_class=HTMLResponse)
-async def initialize_session(request: Request, response: Response) -> dict:
+    
+@router.post("/init")
+async def initialize_session(response: Response) -> dict:
     try:
         # Generate new session ID
         session_id = str(uuid4())
@@ -48,11 +47,11 @@ async def initialize_session(request: Request, response: Response) -> dict:
             samesite="strict"
         )
         
-        # return {"message": "New session initialized", "session_id": session_id}
-        return templates.TemplateResponse("chat.html", {"request": request, "session_id": session_id})
+        return {"message": "New session initialized", "session_id": session_id}
     except Exception as e:
         logger.error(f"Error initializing session: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 def get_session_id(request: Request) -> str:
     session_id = request.cookies.get(COOKIE_NAME)
@@ -62,6 +61,7 @@ def get_session_id(request: Request) -> str:
             detail="No session found. Please initialize a session first."
         )
     return session_id
+
 
 @router.post("/query")
 async def chat_query(
@@ -172,6 +172,7 @@ async def clear_specific_chat_history(
     except Exception as e:
         logger.error(f"Error clearing chat history: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.delete("/history")
 async def clear_current_chat_history(

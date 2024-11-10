@@ -10,11 +10,12 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from uuid import uuid4
 
 # Create SQLite database engine
-DATABASE_URL = "sqlite:///./app/db/sqlite_history/chat_history.db"
+DATABASE_URL = "sqlite:///./backend/app/db/sqlite_history/chat_history.db"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
+
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
@@ -24,9 +25,11 @@ class ChatMessage(Base):
     role = Column(String)  # 'human' or 'ai'
     content = Column(Text)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
-
+    
+    
 # Create tables
 Base.metadata.create_all(bind=engine)
+
 
 class SQLiteChatMessageHistory(BaseChatMessageHistory):
     def __init__(self, session_id: str):
@@ -65,6 +68,7 @@ class SQLiteChatMessageHistory(BaseChatMessageHistory):
 
     def __del__(self):
         self.db.close()
+
 
 def get_db():
     db = SessionLocal()

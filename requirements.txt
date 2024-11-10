@@ -11,9 +11,10 @@ python-dotenv
 faiss-cpu
 # pydantic=2.9.2
 sqlalchemy
-jinja2
-htmx
-
+# jinja2
+# htmx
+chainlit
+requests
 # pymongo
 # motor
 # langchain-mongodb
