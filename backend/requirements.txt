@@ -12,5 +12,5 @@ faiss-cpu
 pydantic==2.9.2
 sqlalchemy
 
-chainlit
-requests
+# chainlit
+# requests
