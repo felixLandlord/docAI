@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     splitter_chunk_size: int = 1500
     splitter_chunk_overlap: int = 300
     faiss_index_dir: str
+    api_base_url: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

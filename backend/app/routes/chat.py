@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, Request, Depends, Response
 from sqlalchemy.orm import Session
 import logging
 from uuid import uuid4
-from core.vectorstore import get_vector_store
-from core.chains import get_rag_chain, get_llm, get_qa_chain
-from core.retrievers import get_semantic_retriever, get_history_aware_retriever
-from core.database import get_db, SQLiteChatMessageHistory
+from backend.app.core.vectorstore import get_vector_store
+from backend.app.core.chains import get_rag_chain, get_llm, get_qa_chain
+from backend.app.core.retrievers import get_semantic_retriever, get_history_aware_retriever
+from backend.app.core.database import get_db, SQLiteChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from pydantic import BaseModel
 from langchain.schema import HumanMessage

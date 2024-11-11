@@ -1,5 +1,5 @@
 from langchain.chains import create_history_aware_retriever
-from core.prompts import CONTEXTUALIZE_Q_PROMPT
+from backend.app.core.prompts import CONTEXTUALIZE_Q_PROMPT
 
 
 def get_semantic_retriever(vector_store):

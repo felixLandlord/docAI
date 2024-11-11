@@ -1,7 +1,6 @@
 from fastapi import FastAPI, responses
 from fastapi.middleware.cors import CORSMiddleware
-from routes import store, chat, others
-
+from backend.app.routes import store, chat, others
 
 app = FastAPI(
     title="docAI",

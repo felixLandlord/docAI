@@ -1,11 +1,11 @@
 from fastapi import APIRouter, File, HTTPException, UploadFile,Request
 from typing import List
 import os
-from core.vectorstore import create_vectorstore_from_documents
+from backend.app.core.vectorstore import create_vectorstore_from_documents
 import io
 import logging
 from fastapi.responses import JSONResponse
-from routes.chat import get_session_id
+from backend.app.routes.chat import get_session_id
 
 
 logger = logging.getLogger(__name__)

@@ -2,8 +2,8 @@ from langchain_groq import ChatGroq
 # from langchain_openai import ChatOpenAI
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-from core.config import settings
-from core.prompts import QA_PROMPT
+from backend.app.core.config import settings
+from backend.app.core.prompts import QA_PROMPT
 
 # GROQ
 def get_llm():

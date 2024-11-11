@@ -3,7 +3,7 @@ import tempfile
 from langchain_community.document_loaders import PyPDFLoader
 import io
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
-from core.config import settings
+from backend.app.core.config import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import faiss
 from langchain_community.docstore.in_memory import InMemoryDocstore

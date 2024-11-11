@@ -3,9 +3,9 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 from sqlalchemy.orm import Session
 import logging
-from core.database import get_db, SQLiteChatMessageHistory
+from backend.app.core.database import get_db, SQLiteChatMessageHistory
 from langchain.schema import HumanMessage
-from routes.chat import get_session_id
+from backend.app.routes.chat import get_session_id
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/misc", tags=["Misc"])
