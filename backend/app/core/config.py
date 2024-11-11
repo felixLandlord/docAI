@@ -5,14 +5,15 @@ class Settings(BaseSettings):
     # openai_key: str
     groq_key: str
     huggingface_key: str
-    llm_name: str = "llama-3.1-8b-instant"
+    # openai_llm_name: str = "gpt-4o"
+    groq_llm_name: str = "llama-3.1-8b-instant"
     llm_temperature: float = 0.1
-    database_url: str = "sqlite:///./backend/app/db/sqlite_history/chat_history.db"
+    database_url: str
     embeddings_name: str = "sentence-transformers/all-mpnet-base-v2"
     embeddings_dim: int = 768
     splitter_chunk_size: int = 1500
     splitter_chunk_overlap: int = 300
-    faiss_index_dir: str = "backend/app/db/faiss_index"
+    faiss_index_dir: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

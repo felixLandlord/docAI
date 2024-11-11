@@ -1,6 +1,6 @@
 fastapi[standard]
-langchain-groq
-# langchain-openai
+# langchain-groq
+langchain-openai
 langchain
 langchain-community
 langchain-huggingface
@@ -11,6 +11,3 @@ python-dotenv
 faiss-cpu
 pydantic==2.9.2
 sqlalchemy
-
-# chainlit
-# requests

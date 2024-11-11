@@ -4,8 +4,22 @@ import requests
 from typing import List
 import os
 
-# fastapi host
-API_BASE_URL = "http://localhost:8000"
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    api_base_url: str
+
+
+    model_config = SettingsConfigDict(env_file=".env")
+
+
+settings = Settings()
+
+
+# fastapi host (local)
+# API_BASE_URL = "http://localhost:8000"
+API_BASE_URL = settings.api_base_url
 
 class ChatSession:
     def __init__(self):

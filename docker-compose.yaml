@@ -10,6 +10,8 @@ services:
       - .env
     volumes:
       - ./frontend:/app
+    environment:
+      - API_BASE_URL=http://fastapi_backend:8000
     restart: unless-stopped
     depends_on:
       - fastapi_backend
@@ -27,4 +29,6 @@ services:
       # - OPENAI_KEY=${OPENAI_KEY}
       - GROQ_KEY=${GROQ_KEY}
       - HUGGINGFACE_KEY=${HUGGINGFACE_KEY}
+      - DATABASE_URL=sqlite:///app/db/sqlite_history/chat_history.db
+      - FAISS_INDEX_DIR=app/db/faiss_index
     restart: unless-stopped
