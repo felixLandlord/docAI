@@ -1,0 +1,13 @@
+fastapi[standard]
+# langchain-groq
+langchain-openai
+langchain
+langchain-community
+langchain-huggingface
+pydantic-settings
+python-multipart
+pypdf
+python-dotenv
+faiss-cpu
+pydantic==2.9.2
+sqlalchemy
