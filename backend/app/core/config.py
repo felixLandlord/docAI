@@ -2,11 +2,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # openai_key: str
-    groq_key: str
+    openai_key: str
+    # groq_key: str
     huggingface_key: str
-    # openai_llm_name: str = "gpt-4o"
-    groq_llm_name: str = "llama-3.1-8b-instant"
+    openai_llm_name: str = "gpt-4o"
+    # groq_llm_name: str = "llama-3.1-8b-instant"
     llm_temperature: float = 0.1
     database_url: str
     embeddings_name: str = "sentence-transformers/all-mpnet-base-v2"

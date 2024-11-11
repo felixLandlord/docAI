@@ -28,14 +28,11 @@ content from PDF or CSV files.
 - **Embedding Model**: Huggingface Embedding Model is used to convert text data into numerical vectors.
 - **Language Model**: OpenAI's Language Model is used to generate responses based on the input queries.
 - **Sqlachemy**: Used for database operations.
-- **Deployment**: Docker Compose is used to easily spin up the required services in Docker containers.
-
 
 ## Setup Instructions
 
 ### Requirements
 - Python 3.10 and above
-- Docker (optional)
 - `fastapi[standard]`
 - `langchain-openai`
 - `langchain-groq` (optional)
@@ -91,32 +88,20 @@ pip install -r requirements.txt
 
 Create a `.env` file in the root directory of the project and add the following variables:
 ```.env
-OPENAI_API_KEY = "your_openai_api_key"
+OPENAI_KEY = "your_openai_key"
+# GROQ_KEY = "your_groq_key"
 HUGGINGFACE_KEY = "your_huggingface_token"
 
-#local
 DATABASE_URL = "sqlite:///./backend/app/db/sqlite_history/chat_history.db"
 FAISS_INDEX_DIR = "backend/app/db/faiss_index"
 
-# docker (optional - already specified in docker-compose)
-# DATABASE_URL="sqlite:///app/db/sqlite_history/chat_history.db"
-# FAISS_INDEX_DIR="app/db/faiss_index"
-
-
 # Chainlit UI
 
-#local
 API_BASE_URL = "http://localhost:8000"
-
-# docker (optional - already specified in docker-compose)
-# API_BASE_URL="http://fastapi_backend:8000"
 ```
 you can use a free language model with the Groq API, just replace __**OPENAI_KEY=your_openai_key**__ with __**GROQ_KEY = "your_groq_key"**__
 
-6. Running the application:
-
-**Without Docker**
-i. Start the FastApi application:
+6. Start the FastApi application:
 To run in development mode:
 ```bash
 fastapi dev backend/app/main.py 
@@ -128,7 +113,7 @@ fastapi run backend/app/main.py
 ```
 This will start the FastApi application on _http://localhost:8000/_
 
-ii. Run the Chainlit web app:
+7. Run the Chainlit web app:
 To run in development mode:
 ```bash
 chainlit run frontend/app.py --port 8001 -w
@@ -140,13 +125,6 @@ chainlit run frontend/app.py --port 8001
 ```
 This will start the Chainlit web application on _http://localhost:8001/_
 
-**With Docker**
-Make sure the Docker daemon is running by opening the docker application
-```bash
-docker-compose up -d
-```
-This will start a docker container with FastApi service (port 8000) and Chainlit service (port 8001)
-
 ### Modifications to use GROQ(free) instead of OPENAI
 - Make sure `langchain-groq` is installed
 
@@ -157,9 +135,6 @@ This will start a docker container with FastApi service (port 8000) and Chainlit
 
 - In the `backend/app/core/chains.py` file, replace `ChatOpenAI` import with `ChatGroq` import
 - In the `backend/app/core/chains.py` file, replace the `OpenAI` **get_llm function** with `Groq` **get_llm function**
-
-- If Using Docker, In the `docker-compose.yaml` file, replace `OPENAI_KEY` with `GROQ_KEY`
-
 
 
 ## Usage
@@ -186,6 +161,7 @@ This will start a docker container with FastApi service (port 8000) and Chainlit
 2. Wait for success confirmation
 3. Start asking questions about your documents
 4. Use "New Chat" to reset everything
+5. Or Click on the "pencil" icon next to a message to edit and send
 
 **Note**: Make sure to only upload PDF documents as other file formats are not supported as of this moment.
 
@@ -205,8 +181,6 @@ The design choices aim to balance performance, modularity, and ease of use while
 Optionally, the Groq API can be used as a free alternative to OpenAI’s model, offering flexibility in model selection based on cost, response quality, and latency needs.
 
 -  SQLite is a lightweight relational database allows for storing chat history and user interactions, enabling future analysis or user experience improvements without complex infrastructure. SQLAlchemy further simplifies the ORM (Object-Relational Mapping) processes and improves development speed by abstracting SQL commands.
-
-- Docker Compose simplifies the deployment and scalability of the system by packaging the entire stack (FastAPI, Chainlit, databases, etc.) into isolated containers. This also ensures that the environment remains consistent across different setups.
 
 - The system provides an intuitive interface through Chainlit for uploading documents and querying them, with real-time feedback and chat management features like "New Chat" to reset conversations. This design enhances user interaction and usability, making it accessible to both technical and non-technical users.
 
@@ -249,6 +223,18 @@ Step 4: Find the option to Create API Key and click it. A new API key will be ge
 Step 5: Copy and securely save the key for your records.
 
 ## Screenshots
-![dashboard1.png](images/dashboard1.png)
-![dashboard2.png](images/dashboard2.png)
-![dashboard3.png](images/dashboard3.png)
+
+User is asked to upload document
+![upload.png](img/upload.png)
+
+User can ask questions about the document
+![chat.png](img/chat.png)
+
+User can edit a message and re-send (last question was edited)
+![edit.png](img/edit.png)
+
+User can start a new chat
+![session.png](img/session.png)
+
+FastApi Routes for the RAG chatbot
+![routes.png](img/routes.png)

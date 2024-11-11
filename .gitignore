@@ -16,6 +16,6 @@ ENV/
 **.venv
 **.venv/
 
-**backend/app/db/faiss_index/index.faiss
-**backend/app/db/faiss_index/index.pkl
-**backend/app/db/sqlite_history/chat_history.db
+# **backend/app/db/faiss_index/index.faiss
+# **backend/app/db/faiss_index/index.pkl
+# **backend/app/db/sqlite_history/chat_history.db
